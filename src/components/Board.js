@@ -54,12 +54,11 @@ function Board() {
     const [grid, setGrid] = useState(() => 
         Array.from({ length: rows }, () => Array(cols).fill(0))
     );
-
     const [shape, setShape] = useState(getRandomShape());
-
+    const [position, setPosition] = useState({ row: 0, col: 4 });
     const shapeRef = useRef(shape);
 
-    const [position, setPosition] = useState({ row: 0, col: 4 });
+    const [isGameOver, setIsGameOver] = useState(false);
 
     const canMoveTo = (nextRow, nextCol, shapeToCheck = shapeRef.current) => {
         const shapeHeight = shapeToCheck.length;
@@ -115,9 +114,10 @@ function Board() {
         shapeRef.current = shape;
     }, [shape]);
 
-    // Shape Control
+    // Handle Key Inputs
     useEffect(() => {
         const handleKeyDown = (e) => {
+            if (isGameOver) return;
 
             if (e.key === 'ArrowUp') {
                 const rotated = rotate(shapeRef.current);
@@ -151,8 +151,17 @@ function Board() {
                     return next;
                 } else if (e.key === 'ArrowDown') {
                     mergeShapeIntoGridAt(prev, shapeRef.current);
-                    setShape(getRandomShape());
-                    return { row: 0, col: 4};
+                    
+                    const newShape = getRandomShape();
+                    const spawnPosition = { row: 0, col: 4};
+
+                    if (!canMoveTo(spawnPosition.row, spawnPosition.col, newShape)) {
+                        setIsGameOver(true);
+                        return prev;
+                    }
+
+                    setShape(newShape);
+                    return spawnPosition;
                 }
                 
                 return prev;
@@ -166,6 +175,8 @@ function Board() {
     
     // Gravity Effect
     useEffect(() => {
+        if (isGameOver) return;
+
         const interval = setInterval(() => {
             setPosition((prev) => { 
                 const next = { ...prev, row: prev.row + 1 };
@@ -174,14 +185,30 @@ function Board() {
                     return next;
                 } else {
                     mergeShapeIntoGridAt(prev, shapeRef.current);
-                    setShape(getRandomShape());
-                    return { row: 0, col: 4};
+                    // Spawn new shape
+                    const newShape = getRandomShape();
+                    const spawnPosition = { row: 0, col: 4};
+
+                    if(!canMoveTo(spawnPosition.row, spawnPosition.col, newShape)) {
+                        setIsGameOver(true);
+                        return prev;
+                    }
+
+                    setShape(newShape);
+                    return spawnPosition;
                 }
             });
         }, 500);
 
         return () => clearInterval(interval);
     }, [grid]);
+
+    const resetGame = () => {
+        setGrid(Array.from({ length: rows }, () => Array(cols).fill(0)));
+        setShape(getRandomShape());
+        setPosition({ row: 0, col: 4 });
+        setIsGameOver(false);
+    };
 
     return (
         <div className="board">
@@ -215,6 +242,12 @@ function Board() {
                         />
                     );
                 })
+            )}
+            {isGameOver && (
+                <div className="game-over-overlay">
+                    <h2>Game Over</h2>
+                    <button onClick={resetGame}>Restart</button>
+                </div>
             )}
         </div>
     );

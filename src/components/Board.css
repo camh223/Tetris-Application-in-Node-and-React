@@ -11,3 +11,15 @@
     background-color: lightgrey;
     border: 1px solid #ccc;
 }
+
+.game-over-overlay {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    color: white;
+    font-size: 2rem;
+    border-radius: 1rem;
+}
