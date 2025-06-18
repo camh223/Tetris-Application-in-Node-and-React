@@ -37,7 +37,7 @@ const SHAPES = {
 const getRandomShape = () => {
     const keys = Object.keys(SHAPES);
     const randKey = keys[Math.floor(Math.random() * keys.length)];
-    return SHAPES[randKey];
+    return { shape: SHAPES[randKey], type: randKey };
 };
 
 const rotate = (shape) => {
@@ -48,16 +48,19 @@ const rotate = (shape) => {
 
 function Board() {
 
+    // Define board shape
     const rows = 20;
     const cols = 10;
 
+
+    // Define states for game
     const [grid, setGrid] = useState(() => 
         Array.from({ length: rows }, () => Array(cols).fill(0))
     );
-    const [shape, setShape] = useState(getRandomShape());
+    const [currentShape, setCurrentShape] = useState(() => getRandomShape());
+    const [nextShape, setNextShape] = useState(() => getRandomShape());
     const [position, setPosition] = useState({ row: 0, col: 4 });
-    const shapeRef = useRef(shape);
-
+    const shapeRef = useRef(currentShape.shape);
     const [isGameOver, setIsGameOver] = useState(false);
 
     const canMoveTo = (nextRow, nextCol, shapeToCheck = shapeRef.current) => {
@@ -82,6 +85,7 @@ function Board() {
     };
 
     const mergeShapeIntoGridAt = (pos, shapeToMerge = shapeRef.current) => {
+        console.log("Merging shape into grid.");
         const newGrid = grid.map((row) => [...row]);
 
         for (let r = 0; r < shapeToMerge.length; r++) {
@@ -97,6 +101,7 @@ function Board() {
         }
         const clearedGrid = clearFullLines(newGrid);
         setGrid(clearedGrid);
+        console.log("Shape Merged");
     };
 
     const clearFullLines = (gridToCheck) => {
@@ -111,12 +116,13 @@ function Board() {
     };
 
     useEffect(() => {
-        shapeRef.current = shape;
-    }, [shape]);
+        shapeRef.current = currentShape.shape;
+    }, [currentShape]);
 
     // Handle Key Inputs
     useEffect(() => {
         const handleKeyDown = (e) => {
+            console.log("Handling Key Press");
             if (isGameOver) return;
 
             if (e.key === 'ArrowUp') {
@@ -127,10 +133,12 @@ function Board() {
                     const testCol = position.col + offset;
                     console.log("Trying to kick with offset", offset, "-> col: ", testCol);
                     if (canMoveTo(position.row, testCol, rotated)) {
-                        setShape(() => {
-                            shapeRef.current = rotated;
-                            return rotated;
-                        });
+                        shapeRef.current = rotated;
+
+                        setCurrentShape(prev => ({
+                            ...prev,
+                            shape: rotated
+                        }));
 
                         setPosition(pos => ({ ...pos, col: pos.col + offset }));
                         return;
@@ -155,12 +163,14 @@ function Board() {
                     const newShape = getRandomShape();
                     const spawnPosition = { row: 0, col: 4};
 
-                    if (!canMoveTo(spawnPosition.row, spawnPosition.col, newShape)) {
+                    if (!canMoveTo(spawnPosition.row, spawnPosition.col, newShape.shape)) {
                         setIsGameOver(true);
                         return prev;
                     }
 
-                    setShape(newShape);
+                    setCurrentShape(nextShape);
+                    shapeRef.current = nextShape.shape;
+                    setNextShape(newShape);
                     return spawnPosition;
                 }
                 
@@ -189,12 +199,13 @@ function Board() {
                     const newShape = getRandomShape();
                     const spawnPosition = { row: 0, col: 4};
 
-                    if(!canMoveTo(spawnPosition.row, spawnPosition.col, newShape)) {
+                    if(!canMoveTo(spawnPosition.row, spawnPosition.col, newShape.shape)) {
                         setIsGameOver(true);
                         return prev;
                     }
 
-                    setShape(newShape);
+                    setCurrentShape(nextShape);
+                    setNextShape(getRandomShape());
                     return spawnPosition;
                 }
             });
@@ -205,50 +216,76 @@ function Board() {
 
     const resetGame = () => {
         setGrid(Array.from({ length: rows }, () => Array(cols).fill(0)));
-        setShape(getRandomShape());
+        setCurrentShape(nextShape);
+        shapeRef.current = nextShape.shape;
+        setNextShape(getRandomShape());
         setPosition({ row: 0, col: 4 });
         setIsGameOver(false);
     };
 
     return (
-        <div className="board">
-            {grid.map((row, rowIndex) =>
-                row.map((cell, colIndex) => {
-                    const relativeRow = rowIndex - position.row;
-                    const relativeCol = colIndex - position.col;
+        <div style={{ display: 'flex' }}>
+            <div className="board">
+                {grid.map((row, rowIndex) =>
+                    row.map((cell, colIndex) => {
+                        const relativeRow = rowIndex - position.row;
+                        const relativeCol = colIndex - position.col;
 
-                    const inShapeBounds =
-                        relativeRow >= 0 &&
-                        relativeRow < shape.length &&
-                        relativeCol >= 0 &&
-                        relativeCol < shape[0].length;
+                        const inShapeBounds =
+                            relativeRow >= 0 &&
+                            relativeRow < currentShape.shape.length &&
+                            relativeCol >= 0 &&
+                            relativeCol < currentShape.shape[0].length;
 
-                    const isShapeCell =
-                        inShapeBounds && shape[relativeRow][relativeCol] === 1;
+                        const isShapeCell =
+                            inShapeBounds && currentShape.shape[relativeRow][relativeCol] === 1;
 
-                    const isLockedCell = grid[rowIndex][colIndex] === 1;
+                        const isLockedCell = grid[rowIndex][colIndex] === 1;
 
-                    return (
-                        <div
-                            key={`${rowIndex}-${colIndex}`}
-                            className="cell"
-                            style={{
-                                backgroundColor: isShapeCell
-                                    ? 'blue'
-                                    : isLockedCell
-                                    ? 'darkgray'
-                                    : 'lightgray',
-                            }}
-                        />
-                    );
-                })
-            )}
-            {isGameOver && (
-                <div className="game-over-overlay">
-                    <h2>Game Over</h2>
-                    <button onClick={resetGame}>Restart</button>
+                        return (
+                            <div
+                                key={`${rowIndex}-${colIndex}`}
+                                className="cell"
+                                style={{
+                                    backgroundColor: isShapeCell
+                                        ? 'blue'
+                                        : isLockedCell
+                                        ? 'darkgray'
+                                        : 'lightgray',
+                                }}
+                            />
+                        );
+                    })
+                )}
+                {isGameOver && (
+                    <div className="game-over-overlay">
+                        <h2>Game Over</h2>
+                        <button onClick={resetGame}>Restart</button>
+                    </div>
+                )}
+            </div>
+            <div className="next-preview">
+                <h3>Next</h3>
+                <div className="preview-grid">
+                    {nextShape.shape.map((row, rowIndex) => (
+                        <div key={rowIndex} style={{ display: 'flex' }}>
+                            {row.map((cell, colIndex) => (
+                                <div
+                                    key={`${rowIndex}-${colIndex}`}
+                                    className="cell"
+                                    style={{
+                                        backgroundColor: cell ? 'blue' : 'lightgray',
+                                        width: '20px',
+                                        height: '20px',
+                                        display: 'inline-block',
+                                        border: '1px solid #ddd'
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    ))}
                 </div>
-            )}
+            </div>
         </div>
     );
 }

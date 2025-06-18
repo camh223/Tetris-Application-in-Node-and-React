@@ -23,3 +23,14 @@
     font-size: 2rem;
     border-radius: 1rem;
 }
+
+.next-preview {
+    margin-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.preview-grid {
+    margin-top: 0.5rem;
+}
