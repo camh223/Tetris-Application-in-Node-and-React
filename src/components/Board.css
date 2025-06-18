@@ -34,3 +34,8 @@
 .preview-grid {
     margin-top: 0.5rem;
 }
+
+.scoreboard {
+    margin-bottom: 1rem;
+    font-family: monospace;
+}

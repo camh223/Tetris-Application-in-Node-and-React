@@ -60,8 +60,13 @@ function Board() {
     const [currentShape, setCurrentShape] = useState(() => getRandomShape());
     const [nextShape, setNextShape] = useState(() => getRandomShape());
     const [position, setPosition] = useState({ row: 0, col: 4 });
-    const shapeRef = useRef(currentShape.shape);
     const [isGameOver, setIsGameOver] = useState(false);
+    const [score, setScore] = useState(0);
+    const [linesCleared, setLinesCleared] = useState(0);
+
+    // Refs
+    const shapeRef = useRef(currentShape.shape);
+    const hasMergedRef = useRef(false);
 
     const canMoveTo = (nextRow, nextCol, shapeToCheck = shapeRef.current) => {
         const shapeHeight = shapeToCheck.length;
@@ -99,20 +104,37 @@ function Board() {
                 }
             }
         }
-        const clearedGrid = clearFullLines(newGrid);
+        const { newGrid: clearedGrid, linesRemoved } = clearFullLines(newGrid);
+
+        console.log("Lines Cleared: ", linesCleared);
+
+        if (linesRemoved > 0) {
+            console.log("Clearing Lines");
+            console.log("Num Lines Removed: ", linesRemoved);
+            setScore(prev => prev + linesRemoved * 100);
+            setLinesCleared(prev => prev + linesRemoved);
+        }
+
+        console.log("Lines Cleared: ", linesCleared);
+
         setGrid(clearedGrid);
         console.log("Shape Merged");
     };
 
+
+    // Row clearing functionality
     const clearFullLines = (gridToCheck) => {
         const newGrid = gridToCheck.filter((row) => row.some((cell) => cell === 0));
-        const linesCleared = rows - newGrid.length;
+        const linesRemoved = rows - newGrid.length;
+
+        //console.log("New grid length", newGrid.length);
+        //console.log("Lines Removed", linesRemoved);
 
         while (newGrid.length < rows) {
             newGrid.unshift(Array(cols).fill(0));
         }
 
-        return newGrid;
+        return { newGrid, linesRemoved };
     };
 
     useEffect(() => {
@@ -148,30 +170,41 @@ function Board() {
                 return;
             }
 
-            setPosition((prev) => {
-                const next = { ...prev };
-
-                if (e.key === 'ArrowLeft') next.col -= 1;
-                if (e.key === 'ArrowRight') next.col += 1;
-                if (e.key === 'ArrowDown') next.row += 1;
+            if (e.key === 'ArrowDown') {
+                const next = { ...position, row: position.row + 1};
 
                 if (canMoveTo(next.row, next.col)) {
-                    return next;
-                } else if (e.key === 'ArrowDown') {
-                    mergeShapeIntoGridAt(prev, shapeRef.current);
-                    
+                    hasMergedRef.current = false;
+                    setPosition(next);
+                } else if (!hasMergedRef.current) {
+                    hasMergedRef.current = true;
+                    mergeShapeIntoGridAt(position, shapeRef.current);
+
                     const newShape = getRandomShape();
                     const spawnPosition = { row: 0, col: 4};
 
                     if (!canMoveTo(spawnPosition.row, spawnPosition.col, newShape.shape)) {
                         setIsGameOver(true);
-                        return prev;
+                        return;
                     }
 
                     setCurrentShape(nextShape);
                     shapeRef.current = nextShape.shape;
                     setNextShape(newShape);
-                    return spawnPosition;
+                    setPosition(spawnPosition);
+                }
+                return;
+            }
+
+            setPosition((prev) => {
+                const next = { ...prev };
+
+                if (e.key === 'ArrowLeft') next.col -= 1;
+                if (e.key === 'ArrowRight') next.col += 1;
+
+                if (canMoveTo(next.row, next.col)) {
+                    hasMergedRef.current = false;
+                    return next;
                 }
                 
                 return prev;
@@ -180,39 +213,40 @@ function Board() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [grid]);
+    }, [grid, position, isGameOver, nextShape]);
 
     
     // Gravity Effect
     useEffect(() => {
-        if (isGameOver) return;
-
         const interval = setInterval(() => {
-            setPosition((prev) => { 
-                const next = { ...prev, row: prev.row + 1 };
+            if (isGameOver) return; 
 
-                if (canMoveTo(next.row, next.col)) {
-                    return next;
-                } else {
-                    mergeShapeIntoGridAt(prev, shapeRef.current);
-                    // Spawn new shape
-                    const newShape = getRandomShape();
-                    const spawnPosition = { row: 0, col: 4};
+            const next = { ...position, row: position.row + 1 };
 
-                    if(!canMoveTo(spawnPosition.row, spawnPosition.col, newShape.shape)) {
-                        setIsGameOver(true);
-                        return prev;
-                    }
+            if (canMoveTo(next.row, next.col)) {
+                hasMergedRef.current = false;
+                setPosition(next);
+            } else if (!hasMergedRef.current) {
+                hasMergedRef.current = true;
+                mergeShapeIntoGridAt(position, shapeRef.current);
+                // Spawn new shape
+                const newShape = getRandomShape();
+                const spawnPosition = { row: 0, col: 4};
 
-                    setCurrentShape(nextShape);
-                    setNextShape(getRandomShape());
-                    return spawnPosition;
+                if(!canMoveTo(spawnPosition.row, spawnPosition.col, newShape.shape)) {
+                    setIsGameOver(true);
+                    return;
                 }
-            });
+
+                setCurrentShape(nextShape);
+                shapeRef.current = nextShape.shape;
+                setNextShape(newShape);
+                setPosition(spawnPosition);
+            }
         }, 500);
 
         return () => clearInterval(interval);
-    }, [grid]);
+    }, [position, grid, isGameOver, nextShape]);
 
     const resetGame = () => {
         setGrid(Array.from({ length: rows }, () => Array(cols).fill(0)));
@@ -221,10 +255,16 @@ function Board() {
         setNextShape(getRandomShape());
         setPosition({ row: 0, col: 4 });
         setIsGameOver(false);
+        setScore(0);
+        setLinesCleared(0);
     };
 
     return (
         <div style={{ display: 'flex' }}>
+            <div className="scoreboard">
+                <h3>Score: {score}</h3>
+                <p>Lines: {linesCleared}</p>
+            </div>
             <div className="board">
                 {grid.map((row, rowIndex) =>
                     row.map((cell, colIndex) => {
