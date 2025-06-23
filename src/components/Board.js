@@ -269,13 +269,8 @@ function Board() {
     };
 
     return (
-        <div style={{ display: 'flex' }}>
-            <div className="scoreboard">
-                <h3>Score: {score}</h3>
-                <p>Lines: {linesCleared}</p>
-                <p>Level: {level}</p>
-            </div>
-            <div className="board">
+        <div className="game-container">
+            <div className="game-board">
                 {grid.map((row, rowIndex) =>
                     row.map((cell, colIndex) => {
                         const relativeRow = rowIndex - position.row;
@@ -314,21 +309,31 @@ function Board() {
                     </div>
                 )}
             </div>
-            <div className="next-preview">
-                <h3>Next</h3>
-                <div className="preview-grid">
+            <div className="side-panel">
+                <div className="info">
+                    <h2>Score:</h2>
+                    <p>{score}</p>
+
+                    <h2>Level:</h2>
+                    <p> {level}</p>
+
+                    <h2>Lines:</h2>
+                    <p>{linesCleared}</p>
+                </div>
+                
+                <div className="next-preview">
+                    <h2>Next</h2>
                     {nextShape.shape.map((row, rowIndex) => (
-                        <div key={rowIndex} style={{ display: 'flex' }}>
+                        <div key={rowIndex} className="next-shape-row">
                             {row.map((cell, colIndex) => (
                                 <div
                                     key={`${rowIndex}-${colIndex}`}
                                     className="cell"
                                     style={{
-                                        backgroundColor: cell ? 'blue' : 'lightgray',
                                         width: '20px',
                                         height: '20px',
-                                        display: 'inline-block',
-                                        border: '1px solid #ddd'
+                                        backgroundColor: cell ? 'blue' : 'transparent',
+                                        border: cell ? '1px solid #333' : 'none',
                                     }}
                                 />
                             ))}
