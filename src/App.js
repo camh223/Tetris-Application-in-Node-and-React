@@ -1,13 +1,19 @@
 import React from 'react';
-import Navbar from './components/Navbar';
-import Board from './components/Board';
+import {BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import GamePage from './pages/GamePage';
 
 function App() {
 	return(
-		<div className="app">
-			<Navbar />
-			<Board />
-		</div>
+		<Router>
+			<Routes>
+				<Route element={<Layout />}>
+					<Route path="/" element={<Dashboard />} />
+					<Route path="/play" element={<GamePage />} />
+				</Route>
+			</Routes>
+		</Router>
 	);
 }
 

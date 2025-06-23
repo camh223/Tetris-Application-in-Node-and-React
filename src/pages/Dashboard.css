@@ -1,0 +1,19 @@
+.dashboard {
+    padding: 2rem;
+    text-align: center;
+}
+
+.dashboard button {
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background-color: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.dashboard button:hover {
+    background-color: #303f9f;
+}
