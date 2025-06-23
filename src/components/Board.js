@@ -63,6 +63,8 @@ function Board() {
     const [isGameOver, setIsGameOver] = useState(false);
     const [score, setScore] = useState(0);
     const [linesCleared, setLinesCleared] = useState(0);
+    const [level, setLevel] = useState(0);
+    const baseInterval = 500;
 
     // Refs
     const shapeRef = useRef(currentShape.shape);
@@ -112,7 +114,14 @@ function Board() {
             console.log("Clearing Lines");
             console.log("Num Lines Removed: ", linesRemoved);
             setScore(prev => prev + linesRemoved * 100);
-            setLinesCleared(prev => prev + linesRemoved);
+            setLinesCleared(prev => {
+                const updated = prev + linesRemoved;
+            
+                const newLevel = Math.floor(updated / 10);
+                setLevel(newLevel);
+            
+                return updated;
+            });
         }
 
         console.log("Lines Cleared: ", linesCleared);
@@ -126,9 +135,6 @@ function Board() {
     const clearFullLines = (gridToCheck) => {
         const newGrid = gridToCheck.filter((row) => row.some((cell) => cell === 0));
         const linesRemoved = rows - newGrid.length;
-
-        //console.log("New grid length", newGrid.length);
-        //console.log("Lines Removed", linesRemoved);
 
         while (newGrid.length < rows) {
             newGrid.unshift(Array(cols).fill(0));
@@ -218,6 +224,8 @@ function Board() {
     
     // Gravity Effect
     useEffect(() => {
+        const speed = baseInterval * Math.pow(0.9, level);
+
         const interval = setInterval(() => {
             if (isGameOver) return; 
 
@@ -243,7 +251,7 @@ function Board() {
                 setNextShape(newShape);
                 setPosition(spawnPosition);
             }
-        }, 500);
+        }, speed);
 
         return () => clearInterval(interval);
     }, [position, grid, isGameOver, nextShape]);
@@ -257,6 +265,7 @@ function Board() {
         setIsGameOver(false);
         setScore(0);
         setLinesCleared(0);
+        setLevel(0);
     };
 
     return (
@@ -264,6 +273,7 @@ function Board() {
             <div className="scoreboard">
                 <h3>Score: {score}</h3>
                 <p>Lines: {linesCleared}</p>
+                <p>Level: {level}</p>
             </div>
             <div className="board">
                 {grid.map((row, rowIndex) =>
