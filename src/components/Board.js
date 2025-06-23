@@ -304,8 +304,12 @@ function Board() {
                 )}
                 {isGameOver && (
                     <div className="game-over-overlay">
-                        <h2>Game Over</h2>
-                        <button onClick={resetGame}>Restart</button>
+                        <div className="game-over-content">
+                            <h1>Game Over</h1>
+                            <p>Score: <span>{score}</span></p>
+                            <p>Level: <span>{level}</span></p>
+                            <button onClick={resetGame}>Restart</button>
+                        </div>
                     </div>
                 )}
             </div>
