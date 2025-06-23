@@ -1,0 +1,14 @@
+.navbar {
+    background-color: #222;
+    color: #fff;
+    padding: 1rem 2rem;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-title {
+    margin: 0;
+    font-size: 2rem;
+    font-family: 'Press Start 2P', monospace;
+    letter-spacing: 2px;
+}
