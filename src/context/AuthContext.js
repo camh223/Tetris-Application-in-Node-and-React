@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import api from '../api/axios';
 
 const AuthContext = createContext();
@@ -6,6 +6,29 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadUser = async () => {
+            const token = localStorage.getItem('token');
+            console.log('Checking token', token);
+            if (token) {
+                try {
+                    const res = await api.get('/auth/me', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    console.log('User loaded:', res.data.user);
+                    setUser(res.data.user);
+                } catch (err) {
+                    console.error('Token invalid or expired');
+                    localStorage.removeItem('token');
+                }
+            }
+            setLoading(false);
+            console.log("Finished auth check");
+        };
+        loadUser();
+    }, []);
 
     const login = async (email, password) => {
         try {
@@ -36,8 +59,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
-            {children}
+        <AuthContext.Provider value={{ user, login, logout, error }}>
+            {!loading && children}
         </AuthContext.Provider>
     );
 };
