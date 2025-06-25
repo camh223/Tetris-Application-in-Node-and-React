@@ -1,23 +1,28 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+
+import './Login.css'
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const { login } = useAuth();
+    const { login, error } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
 
         try {
-            await login(email, password);
-            navigate('/tetris');
+            const loggedInUser = await login(email, password);
+            if (!loggedInUser) {
+                console.log('Login failed');
+            } else {
+                console.log('Login successful');
+                navigate('/play');
+            }
         } catch (err) {
-            setError(err.message || 'Failed to login');
+            console.error('Unexpected error:', err);
         }
     };
 

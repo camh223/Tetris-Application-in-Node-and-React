@@ -1,29 +1,39 @@
 import { createContext, useState, useContext } from 'react';
+import api from '../api/axios';
 
 const AuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
-
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [error, setError] = useState('');
 
     const login = async (email, password) => {
-        const response = await fetch('http://localhost:5000/api/auth/login', {
-            method: 'POST',
-            header: { 'Context-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-        });
+        try {
+            const response = await api.post('/auth/login', {
+                email,
+                password,
+            });
+            const data = response.data
 
-        if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.message || 'Login failed');
+            setUser(data.user);
+            localStorage.setItem('token', data.token);
+            console.log('Login successful', data);
+            setError('');
+            return data.user;
+        } catch (err) {
+            console.error('Login error', err);
+            if (err.response && err.response.data && err.response.data.message) {
+                setError(err.response.data.message);
+            } else {
+                setError('Login failed');
+            }
         }
-
-        const data = await response.json();
-        setUser(data.user);
-        localStorage.setItem('token', data.token);
     };
-    const logout = () => setUser(null);
+
+    const logout = () => {
+        setUser(null);
+        localStorage.removeItem('token');
+    }
 
     return (
         <AuthContext.Provider value={{ user, login, logout }}>
@@ -31,4 +41,6 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
+
+export const useAuth = () => useContext(AuthContext);
 

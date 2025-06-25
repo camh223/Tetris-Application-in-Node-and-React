@@ -7,12 +7,12 @@ const authRoutes = require('./routes/auth');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
 app.use('/api/auth', authRoutes);
 
 mongoose.connect(process.env.MONGO_URI, {
