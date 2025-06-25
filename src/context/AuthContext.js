@@ -58,8 +58,48 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
     }
 
+    const updateHighScore = async (score) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No token found');
+            }
+
+            const response = await api.put('/auth/update-highscore', {
+                score
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const data = response.data;
+            
+            // Update the user's high score in the context if it was updated
+            if (data.isNewHighScore) {
+                setUser(prevUser => ({
+                    ...prevUser,
+                    highScore: data.highScore
+                }));
+            }
+
+            return data;
+        } catch (err) {
+            console.error('Update high score error:', err);
+            throw err;
+        }
+    };
+
+    const getLeaderboard = async () => {
+        try {
+            const response = await api.get('/auth/leaderboard');
+            return response.data.leaderboard;
+        } catch (err) {
+            console.error('Get leaderboard error:', err);
+            throw err;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, error }}>
+        <AuthContext.Provider value={{ user, login, logout, updateHighScore, getLeaderboard, error }}>
             {!loading && children}
         </AuthContext.Provider>
     );

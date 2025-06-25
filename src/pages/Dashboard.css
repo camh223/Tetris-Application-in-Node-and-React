@@ -1,6 +1,126 @@
 .dashboard {
     padding: 2rem;
     text-align: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-content {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.stats-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.leaderboard-section {
+    flex: 1;
+    min-width: 400px;
+    text-align: left;
+}
+
+.leaderboard-section h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #3f51b5;
+}
+
+.leaderboard {
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.leaderboard-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-item.current-user {
+    background: linear-gradient(135deg, #3f51b5, #5c6bc0);
+    color: white;
+    font-weight: bold;
+}
+
+.leaderboard-item:nth-child(1) {
+    background: linear-gradient(135deg, #ffd700, #ffed4a);
+    color: #333;
+    font-weight: bold;
+}
+
+.leaderboard-item:nth-child(2) {
+    background: linear-gradient(135deg, #c0c0c0, #e0e0e0);
+    color: #333;
+    font-weight: bold;
+}
+
+.leaderboard-item:nth-child(3) {
+    background: linear-gradient(135deg, #cd7f32, #daa520);
+    color: white;
+    font-weight: bold;
+}
+
+.rank {
+    font-size: 1.1rem;
+    font-weight: bold;
+    width: 40px;
+    text-align: center;
+}
+
+.username {
+    flex: 1;
+    padding: 0 1rem;
+    font-size: 1rem;
+}
+
+.score {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.leaderboard-item.current-user .score {
+    color: #fff;
+}
+
+.leaderboard-item:nth-child(1) .score,
+.leaderboard-item:nth-child(2) .score,
+.leaderboard-item:nth-child(3) .score {
+    color: #333;
+}
+
+.error {
+    color: #f44336;
+    font-style: italic;
+}
+
+.stats {
+    margin-bottom: 1.5rem;
 }
 
 .dashboard button {
@@ -12,8 +132,31 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .dashboard button:hover {
     background-color: #303f9f;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .dashboard-content {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .stats-section,
+    .leaderboard-section {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .leaderboard-section {
+        text-align: center;
+    }
+    
+    .leaderboard {
+        text-align: left;
+    }
 }

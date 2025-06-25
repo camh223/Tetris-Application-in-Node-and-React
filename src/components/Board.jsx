@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../context/AuthContext';
 import './Board.css'
 
 const SHAPES = {
@@ -47,6 +48,7 @@ const rotate = (shape) => {
 };
 
 function Board() {
+    const { user, updateHighScore } = useAuth();
 
     // Define board shape
     const rows = 20;
@@ -64,6 +66,7 @@ function Board() {
     const [score, setScore] = useState(0);
     const [linesCleared, setLinesCleared] = useState(0);
     const [level, setLevel] = useState(0);
+    const [isNewHighScore, setIsNewHighScore] = useState(false);
     const baseInterval = 500;
 
     // Refs
@@ -142,6 +145,24 @@ function Board() {
 
         return { newGrid, linesRemoved };
     };
+
+    const handleGameOver = async () => {
+        if (user && score > 0) {
+            try {
+                const result = await updateHighScore(score);
+                setIsNewHighScore(result.isNewHighScore);
+            } catch (error) {
+                console.error('Failed to update high score:', error);
+            }
+        }
+    };
+
+    // Handle game over and high score update
+    useEffect(() => {
+        if (isGameOver && user && score > 0) {
+            handleGameOver();
+        }
+    }, [isGameOver, user, score]);
 
     useEffect(() => {
         shapeRef.current = currentShape.shape;
@@ -266,6 +287,7 @@ function Board() {
         setScore(0);
         setLinesCleared(0);
         setLevel(0);
+        setIsNewHighScore(false);
     };
 
     return (
@@ -306,8 +328,16 @@ function Board() {
                     <div className="game-over-overlay">
                         <div className="game-over-content">
                             <h1>Game Over</h1>
+                            {isNewHighScore && (
+                                <div className="new-high-score">
+                                    <h2 style={{ color: 'gold' }}>New High Score!</h2>
+                                </div>
+                            )}
                             <p>Score: <span>{score}</span></p>
                             <p>Level: <span>{level}</span></p>
+                            {user && (
+                                <p>Your High Score: <span>{user.highScore}</span></p>
+                            )}
                             <button onClick={resetGame}>Restart</button>
                         </div>
                     </div>
@@ -323,6 +353,13 @@ function Board() {
 
                     <h2>Lines:</h2>
                     <p>{linesCleared}</p>
+
+                    {user && (
+                        <>
+                            <h2>High Score:</h2>
+                            <p>{user.highScore}</p>
+                        </>
+                    )}
                 </div>
                 
                 <div className="next-preview">
