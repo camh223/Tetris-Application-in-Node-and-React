@@ -315,10 +315,10 @@ function Board() {
                                 className="cell"
                                 style={{
                                     backgroundColor: isShapeCell
-                                        ? 'blue'
+                                        ? '#bb86fc'
                                         : isLockedCell
-                                        ? 'darkgray'
-                                        : 'lightgray',
+                                        ? '#03dac6'
+                                        : '#2d2d2d',
                                 }}
                             />
                         );
@@ -373,8 +373,9 @@ function Board() {
                                     style={{
                                         width: '20px',
                                         height: '20px',
-                                        backgroundColor: cell ? 'blue' : 'transparent',
-                                        border: cell ? '1px solid #333' : 'none',
+                                        backgroundColor: cell ? '#bb86fc' : 'transparent',
+                                        border: cell ? '1px solid #bb86fc' : 'none',
+                                        borderRadius: '2px',
                                     }}
                                 />
                             ))}

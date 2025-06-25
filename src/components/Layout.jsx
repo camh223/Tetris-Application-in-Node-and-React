@@ -4,9 +4,9 @@ import Navbar from './Navbar';
 
 function Layout() {
     return (
-        <div>
+        <div style={{ backgroundColor: '#121212', minHeight: '100vh', color: '#ffffff' }}>
             <Navbar />
-            <main>
+            <main style={{ backgroundColor: '#121212' }}>
                 <Outlet />
             </main>
         </div>

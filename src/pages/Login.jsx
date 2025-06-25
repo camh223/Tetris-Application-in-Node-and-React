@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 import './Login.css'
@@ -56,13 +56,11 @@ const Login = () => {
 
                     <button type="submit">Login</button>
                 </form>
-            </div>
-            <div class="d-flex align-items-center">
-                <div class="mx-auto">
-                    <button type="button" class="btn btn-secondary">Or Register Here</button>
+                
+                <div className="auth-link">
+                    <p>Don't have an account? <Link to="/register">Register here</Link></p>
                 </div>
             </div>
-            
         </div>
     );
 };
