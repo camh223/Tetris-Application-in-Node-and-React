@@ -1,6 +1,6 @@
 .navbar {
     background-color: #222;
-    color: #fff;
+    color: #222;
     padding: 1rem 2rem;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -9,6 +9,6 @@
 .navbar-title {
     margin: 0;
     font-size: 2rem;
-    font-family: 'Press Start 2P', monospace;
+    font-family: monospace;
     letter-spacing: 2px;
 }
