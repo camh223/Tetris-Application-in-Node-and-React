@@ -2,35 +2,25 @@
 
 This is a project to create a competitive Tetris web application using Node.js and React.js
 
-## Available Scripts
+# Prerequistes
 
-In the project directory, you can run:
+To install required packages, run npm install.
 
-### `npm start`
+## Build
 
-Runs the app in the development mode.\
+Build the project for production using `npm run build`.
+
+## Run
+
+Run the app in development mode using `npm start`.
+
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+## Test
 
-Launches the test runner in the interactive watch mode.\
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Launch the test runner in the interactive watch mode using `npm test`.
 
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
