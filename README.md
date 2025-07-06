@@ -8,9 +8,9 @@ To install required packages, `run npm install`.
 
 Add the following secrets to server/.env:
 
-PORT={port}/
-MONGO_URI={URI for MongoDB}/
-JWT_SECRET={Your JSON Web Token}/
+PORT={port}  
+MONGO_URI={URI for MongoDB}  
+JWT_SECRET={Your JSON Web Token}  
 
 ## Build
 
