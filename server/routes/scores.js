@@ -1,8 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { submitScore, getTopScores } = require("../controllers/scoreController");
+const authenticateToken = require("../middleware/authMiddleware");
+const { 
+    submitScore, 
+    getTopScores,
+    getUserScores,
+} = require("../controllers/scoreController");
 
-router.post("/", submitScore);
-router.get("/", getTopScores);
+router.post("/submit", authenticateToken, submitScore);
+router.get("/top", getTopScores);
+router.get("/history", authenticateToken, getUserScores);
 
 module.exports = router;
