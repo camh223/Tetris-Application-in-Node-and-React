@@ -15,8 +15,7 @@ exports.submitScore = async (req, res) => {
         }
         res.status(201).json({ message: "Score submitted", score: newScore });
     } catch (err) {
-        console.error("Submit score error:", err);
-        res.status(500).json({ message: "Failed to submit score" });
+        next(err);
     }
 };
 
@@ -29,8 +28,7 @@ exports.getTopScores = async (req, res) => {
         
         res.json(topScores);
     } catch (err) {
-        console.error("Get top scores error:", err);
-        res.status(500).json({ message: "Failed to fetch scores" });
+        next(err);
     }
 };
 
@@ -41,7 +39,6 @@ exports.getUserScores = async (req, res) => {
         
         res.json(scores);
     } catch (err) {
-        console.error("Get user scores error:", err);
-        res.status(500).json({ message: "Failed to fetch user scores" })
+        next(err);
     }
 };

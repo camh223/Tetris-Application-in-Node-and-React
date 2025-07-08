@@ -9,8 +9,9 @@ exports.registerUser = async (req, res) => {
 
         const existingUser = await User.findOne({ username });
         if (existingUser) {
-            console.log("Username already exists");
-            return res.status(400).json({ message: "Username taken"});
+            const error = new Error("Username Taken");
+            res.status(400);
+            return next(error);
         }
 
         const hashed = await bcrypt.hash(password, 10);
@@ -18,8 +19,7 @@ exports.registerUser = async (req, res) => {
 
         res.status(201).json({ message: "User registered" });
     } catch (err) {
-        console.error("Registration error:", err);
-        res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };
 
@@ -28,15 +28,23 @@ exports.loginUser = async (req, res) => {
         const { email, password } = req.body;
 
         const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: "Invalid credentials" });
+        if (!user) {
+            const error = new Error("Invalid credentials");
+            res.status(400);
+            return next(error);
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+        if (!isMatch) {
+            const error = new Error("Invalid credentials");
+            res.status(400);
+            return next(error);
+        }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
         res.json({ token, user: {id: user._id, username: user.username, email: user.email, highScore: user.highScore } });
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        next(err);
     }
 };

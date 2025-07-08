@@ -1,4 +1,5 @@
 const express = require('express');
+const errorHandler = require("./middleware/errorHandler");
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
@@ -16,6 +17,7 @@ const scoreRoutes = require('./routes/scores');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/scores', scoreRoutes);
+app.use(errorHandler);
 
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
