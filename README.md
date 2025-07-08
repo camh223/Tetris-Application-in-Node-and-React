@@ -1,29 +1,91 @@
-# Tetris Application in Node and React
+# Tetris Web Application in React and Node.js
 
-This is a project to create a competitive Tetris web application using Node.js and React.js
+A modern, full-stack Tetris clone built with React, Node.js, and MongoDB.
 
-# Prerequistes
+This application allows users to play Tetris, compete on a global leaderboard, and securely create accounts using JWT-based authentication.
 
-To install required packages, `run npm install`.
+# Project Structure
 
-Add the following secrets to server/.env:
+```sh
+.
+├── public/                 # Static files
+├── src/                   # Frontend source code (React)
+│   ├── api/               # Axios or API helper modules
+│   ├── components/        # Reusable UI components
+│   ├── context/           # Auth / global state
+│   ├── pages/             # Page-level components (Login Game, etc.)
+│   ├── App.jsx
+│   └── index.js
+├── server/                # Backend API (Express)
+│   ├── models/            # Mongoose schemas
+│   ├── routes/            # API route handlers
+│   └── server.js          # Express app entry point
+├── package.json           # Root dependencies (frontend)
+└── README.md
+```
 
-PORT={port}  
-MONGO_URI={URI for MongoDB}  
-JWT_SECRET={Your JSON Web Token}  
 
-## Build
+# Local Development Setup
 
-Build the project for production using `npm run build`.
+## Clone the Repository
 
-## Run
+```sh
+git clone https://github.com/camh223/Tetris-Application-in-Node-and-React.git
+```
 
-Run the app in development mode using `npm start`.
+```sh
+cd Tetris-Application-in-Node-and-React
+```
 
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Set up Environment Variables
 
-The page will reload when you make changes.
+Create a `.env` file in the `/server` directory:
 
-## Test
+```sh
+MONGO_URI=your_mongo_connection_string
+JWT_SECRET=your_secret_key
+PORT=5000
+```
 
-Launch the test runner in the interactive watch mode using `npm test`.
+## Install Dependencies
+
+Frontend:
+
+```sh
+# In project root
+
+npm install 
+```
+
+Backend:
+
+```sh
+cd server
+npm install
+```
+
+## Run the App:
+
+In one terminal, start the backend:
+
+```sh
+cd server
+npm run dev
+```
+
+In another terminal, start the frontend:
+
+```sh
+# In project root
+
+npm start
+```
+
+Visit the app at: http://localhost:3000
+
+# License
+
+This project is licensed under the MIT License.
+
+
+
