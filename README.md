@@ -8,7 +8,7 @@ This application allows users to play Tetris, compete on a global leaderboard, a
 
 ```sh
 .
-├── public/                 # Static files
+├── public/                # Static files
 ├── src/                   # Frontend source code (React)
 │   ├── api/               # Axios or API helper modules
 │   ├── components/        # Reusable UI components
@@ -17,6 +17,8 @@ This application allows users to play Tetris, compete on a global leaderboard, a
 │   ├── App.jsx
 │   └── index.js
 ├── server/                # Backend API (Express)
+│   ├── controllers/       # Request handling
+│   ├── middleware/        # Common functionality
 │   ├── models/            # Mongoose schemas
 │   ├── routes/            # API route handlers
 │   └── server.js          # Express app entry point
