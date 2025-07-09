@@ -14,9 +14,11 @@ app.use(express.json());
 
 const authRoutes = require('./routes/auth');
 const scoreRoutes = require('./routes/scores');
+const userRoutes = require('./routes/users');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/scores', scoreRoutes);
+app.use('/api/users', userRoutes);
 app.use(errorHandler);
 
 mongoose.connect(process.env.MONGO_URI, {
