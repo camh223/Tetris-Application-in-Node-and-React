@@ -1,15 +1,18 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+import { Response, NextFunction, RequestHandler } from 'express';
+import User from '../models/User';
+import { AuthenticatedRequest } from '../types/AuthenticatedRequest';
 
-exports.getMe = async (req, res) => {
+export const getMe: RequestHandler = async (req, res, next) => {
+    const authReq = req as AuthenticatedRequest;
     try {
-        res.json({ user: req.user });
+        res.json({ user: authReq.user });
     } catch (err) {
         next(err);
     }
 };
 
-exports.updateHighScore = async (req, res) => {
+export const updateHighScore: RequestHandler = async (req, res, next) => {
+    const authReq = req as AuthenticatedRequest;
     const { score } = req.body;
 
     if (typeof score !== "number" || score < 0) {
@@ -19,7 +22,7 @@ exports.updateHighScore = async (req, res) => {
     }
 
     try {
-        const user = req.user;
+        const user = authReq.user;
 
         if (score > user.highScore) {
             user.highScore = score;
@@ -41,7 +44,7 @@ exports.updateHighScore = async (req, res) => {
     }
 };
 
-exports.getLeaderboard = async (req, res) => {
+export const getLeaderboard: RequestHandler = async (req, res, next) => {
     try {
         const users = await User.find({})
             .select("username highScore")

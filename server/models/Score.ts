@@ -1,9 +1,17 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
-const scoreSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+export interface IScore extends Document {
+    user: Types.ObjectId;
+    score: number;
+    createdAt: Date;
+}
+
+const scoreSchema: Schema<IScore> = new Schema({
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     score: { type: Number, required: true },
     createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Score", scoreSchema);
+const Score = mongoose.model<IScore>('Score', scoreSchema);
+
+export default Score;

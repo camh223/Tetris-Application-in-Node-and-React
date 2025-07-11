@@ -1,10 +1,15 @@
-const express = require('express');
-const errorHandler = require("./middleware/errorHandler");
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
+import express, { Application } from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import errorHandler from './middleware/errorHandler';
 
-const app = express();
+import authRoutes from './routes/auth';
+import scoreRoutes from './routes/scores';
+
+dotenv.config();
+
+const app: Application = express();
 
 app.use(cors({
     origin: 'http://localhost:3000',
@@ -12,19 +17,20 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const authRoutes = require('./routes/auth');
-const scoreRoutes = require('./routes/scores');
-
 app.use('/api/auth', authRoutes);
 app.use('/api/scores', scoreRoutes);
 app.use(errorHandler);
 
-mongoose.connect(process.env.MONGO_URI, {
+const PORT: number = parseInt(process.env.PORT || '5000', 10);
+
+mongoose.connect(process.env.MONGO_URI as string, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-}).then(() => {
+} as mongoose.ConnectOptions)
+.then(() => {
     console.log('MongoDB connected');
-    app.listen(process.env.PORT || 5000, () => 
-        console.log(`Server running on port ${process.env.PORT || 5000}`)
+    app.listen(PORT, () => 
+        console.log(`Server running on port ${PORT}`)
     );
-}).catch((err) => console.log('MongoDB connection error:', err));
+})
+.catch((err) => console.log('MongoDB connection error:', err));

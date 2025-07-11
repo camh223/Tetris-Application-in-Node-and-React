@@ -1,14 +1,16 @@
-const express = require("express");
-const router = express.Router();
-const authenticateToken = require("../middleware/authMiddleware");
-const { 
-    submitScore, 
+import express from 'express';
+import { RequestHandler } from 'express';
+import authenticateToken from '../middleware/authMiddleware';
+import {
+    submitScore,
     getTopScores,
-    getUserScores,
-} = require("../controllers/scoreController");
+    getUserScores
+} from '../controllers/scoreController';
 
-router.post("/submit", authenticateToken, submitScore);
-router.get("/top", getTopScores);
-router.get("/history", authenticateToken, getUserScores);
+const router = express.Router();
 
-module.exports = router;
+router.post("/submit", authenticateToken , submitScore );
+router.get("/top", getTopScores );
+router.get("/history", authenticateToken , getUserScores );
+
+export default router;

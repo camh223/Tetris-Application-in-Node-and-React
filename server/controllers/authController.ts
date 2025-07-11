@@ -1,8 +1,9 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User from '../models/User';
 
-exports.registerUser = async (req, res) => {
+export const registerUser: RequestHandler = async (req, res, next) => {
     try {
         console.log("Registering user with data:", req.body);
         const { username, password, email } = req.body;
@@ -15,7 +16,7 @@ exports.registerUser = async (req, res) => {
         }
 
         const hashed = await bcrypt.hash(password, 10);
-        const newUser = await User.create({ username, email, password: hashed });
+        await User.create({ username, email, password: hashed });
 
         res.status(201).json({ message: "User registered" });
     } catch (err) {
@@ -23,7 +24,7 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-exports.loginUser = async (req, res) => {
+export const loginUser: RequestHandler = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -41,9 +42,20 @@ exports.loginUser = async (req, res) => {
             return next(error);
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = jwt.sign(
+            { id: user._id }, 
+            process.env.JWT_SECRET as string, 
+            { expiresIn: "1d" }
+        );
 
-        res.json({ token, user: {id: user._id, username: user.username, email: user.email, highScore: user.highScore } });
+        res.json({ token,
+            user: {
+                id: user._id, 
+                username: user.username, 
+                email: user.email, 
+                highScore: user.highScore 
+            },
+        });
     } catch (err) {
         next(err);
     }

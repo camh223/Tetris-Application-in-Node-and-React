@@ -1,15 +1,18 @@
-const Score = require("../models/Score");
-const User = require("../models/User");
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import Score from '../models/Score';
+import User from '../models/User';
+import { AuthenticatedRequest } from '../types/AuthenticatedRequest';
 
-exports.submitScore = async (req, res) => {
+export const submitScore: RequestHandler = async (req, res, next) => {
+    const authReq = req as AuthenticatedRequest;
     try {
         const { score } = req.body;
-        const userId = req.user._id;
+        const userId = authReq.user._id;
 
         const newScore = await Score.create({ user: userId, score });
 
         const user = await User.findById(userId);
-        if (score > user.highScore) {
+        if (user && score > user.highScore) {
             user.highScore = score;
             await user.save();
         }
@@ -19,7 +22,7 @@ exports.submitScore = async (req, res) => {
     }
 };
 
-exports.getTopScores = async (req, res) => {
+export const getTopScores: RequestHandler = async (req, res, next) => {
     try {
         const topScores = await Score.find()
             .sort({ score: -1 })
@@ -32,11 +35,10 @@ exports.getTopScores = async (req, res) => {
     }
 };
 
-exports.getUserScores = async (req, res) => {
+export const getUserScores: RequestHandler = async (req, res, next) => {
+    const authReq = req as AuthenticatedRequest;
     try {
-        const scores = await Score.find({ user: req.user._id })
-            .sort({ createdAt: -1 });
-        
+        const scores = await Score.find({ user: authReq.user._id }).sort({ createdAt: -1 });
         res.json(scores);
     } catch (err) {
         next(err);

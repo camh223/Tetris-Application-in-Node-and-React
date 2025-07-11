@@ -1,17 +1,22 @@
-const express = require('express');
-const router = express.Router();
-const { registerUser, loginUser } = require("../controllers/authController");
-const {
+import express from 'express';
+import { RequestHandler } from 'express';
+import {
+    registerUser,
+    loginUser
+} from '../controllers/authController';
+import {
     getMe,
     updateHighScore,
-    getLeaderboard,
-} = require("../controllers/userController");
-const authenticateToken = require("../middleware/authMiddleware");
+    getLeaderboard
+} from '../controllers/userController';
+import authenticateToken from '../middleware/authMiddleware';
+
+const router = express.Router();
 
 router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.get("/me", authenticateToken, getMe);
-router.put("/update-highscore", authenticateToken, updateHighScore);
-router.get("/leaderboard", getLeaderboard);
+router.post("/login", loginUser );
+router.get("/me", authenticateToken , getMe );
+router.put("/update-highscore", authenticateToken , updateHighScore );
+router.get("/leaderboard", getLeaderboard );
 
-module.exports = router;
+export default router;
