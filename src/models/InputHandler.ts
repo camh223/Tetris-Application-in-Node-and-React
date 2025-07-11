@@ -19,15 +19,19 @@ export default class InputHandler {
     private handleKeyDown(e: KeyboardEvent): void {
         switch (e.code) {
             case "ArrowLeft":
+                e.preventDefault();
                 this.callback("MOVE_LEFT");
                 break;
             case "ArrowRight":
+                e.preventDefault();
                 this.callback("MOVE_RIGHT");
                 break;
             case "ArrowDown":
+                e.preventDefault();
                 this.callback("SOFT_DROP");
                 break;
             case "ArrowUp":
+                e.preventDefault();
                 this.callback("ROTATE");
                 break;
         }

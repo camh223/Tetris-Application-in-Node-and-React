@@ -15,7 +15,7 @@ export class CollisionDetector {
                 const targetCol = col + c;
 
                 const cell = this.grid.getCell(targetRow, targetCol);
-                if (cell === null || cell === 1) return false;
+                if (cell === null || cell.value === 1) return false;
             }
         }
 

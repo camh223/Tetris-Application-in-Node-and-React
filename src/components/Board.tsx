@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Grid } from '../models/Grid';
 import { ShapeBase, ShapeFactory } from '../models/Shape';
@@ -71,24 +71,33 @@ class Board extends Component<{}, BoardState> {
     }
 
     handleInput = (action: string): void => {
-        const { currentShape, position, grid } = this.state;
+        const { currentShape, position } = this.state;
         let newPosition = { ...position };
 
         switch (action) {
             case "MOVE_LEFT":
                 newPosition.col -= 1;
+                if (this.collisionDetector.canPlaceShapeAt(currentShape, newPosition.row, newPosition.col)) {
+                    this.setState({ position: newPosition });
+                }
                 break;
             case "MOVE_RIGHT":
                 newPosition.col += 1;
+                if (this.collisionDetector.canPlaceShapeAt(currentShape, newPosition.row, newPosition.col)) {
+                    this.setState({ position: newPosition });
+                }
                 break;
             case "SOFT_DROP":
                 newPosition.row += 1;
+                if (this.collisionDetector.canPlaceShapeAt(currentShape, newPosition.row, newPosition.col)) {
+                    this.setState({ position: newPosition });
+                }
                 break;
             case "ROTATE":
                 const rotatedShape = currentShape.copy();
                 rotatedShape.rotate();
 
-                if (!this.collisionDetector.canPlaceShapeAt(rotatedShape, newPosition.row, newPosition.col)) {
+                if (this.collisionDetector.canPlaceShapeAt(rotatedShape, newPosition.row, newPosition.col)) {
                     this.setState({ currentShape: rotatedShape });
                 }
                 break;
@@ -107,10 +116,27 @@ class Board extends Component<{}, BoardState> {
             this.setState({ position: nextPosition });
         } else {
             const newGrid = grid.clone();
-            newGrid.mergeShape(currentShape.matrix, position)
+            newGrid.mergeShape(currentShape.matrix, position, currentShape.color, currentShape.type);
 
-            this.setState({ grid: newGrid }, () => {
+            // Check for completed lines and clear them
+            const clearResult = newGrid.clearLines();
+            const points = this.calculateScore(clearResult.linesCleared);
+            const newLinesCleared = this.state.linesCleared + clearResult.linesCleared;
+            const newLevel = Math.floor(newLinesCleared / 10);
+
+            this.setState({ 
+                grid: newGrid,
+                score: this.state.score + points,
+                linesCleared: newLinesCleared,
+                level: newLevel
+            }, () => {
                 this.collisionDetector = new CollisionDetector(this.state.grid);
+                
+                // Restart gravity with new level speed
+                if (newLevel > this.state.level) {
+                    this.startGravity();
+                }
+                
                 this.spawnNextShape();
             });
         }
@@ -121,7 +147,9 @@ class Board extends Component<{}, BoardState> {
         const newPosition = { row: 0, col: 4};
 
         if (!this.collisionDetector.canPlaceShapeAt(this.state.nextShape, newPosition.row, newPosition.col)) {
-            this.setState({ isGameOver: true });
+            this.setState({ isGameOver: true }, () => {
+                this.checkAndSaveHighScore();
+            });
             this.inputHandler.unbindListeners();
             clearInterval(this.gravityInterval);
             return;
@@ -134,15 +162,33 @@ class Board extends Component<{}, BoardState> {
         });
     }
 
-    private getRenderGrid(): { value: number, color: string }[][] {
+    async checkAndSaveHighScore(): Promise<void> {
+        if (!this.context) return;
+        
+        const { user, updateHighScore } = this.context;
+        
+        if (user && this.state.score > user.highScore) {
+            try {
+                const result = await updateHighScore(this.state.score);
+                if (result.isNewHighScore) {
+                    this.setState({ isNewHighScore: true });
+                }
+            } catch (error) {
+                console.error('Failed to save high score:', error);
+            }
+        }
+    }
+
+    private getRenderGrid(): { value: number, color: string, shapeType?: string }[][] {
         const { grid, currentShape, position } = this.state;
-        const baseGrid = grid.clone().getMatrix();
+        const baseGrid = grid.getMatrix();
         const shapeMatrix = currentShape.matrix;
 
-        const tempGrid: { value: number, color: string }[][] = baseGrid.map(row =>
+        const tempGrid: { value: number, color: string, shapeType?: string }[][] = baseGrid.map(row =>
             row.map(cell => ({
-                value: cell,
-                color: cell ? '#999' : 'transparent'
+                value: cell.value,
+                color: cell.value ? (cell.color || '#999') : 'transparent',
+                shapeType: cell.shapeType
             }))
         );
 
@@ -153,7 +199,8 @@ class Board extends Component<{}, BoardState> {
                 if (cell && y >= 0 && y < this.numRows && x >= 0 && x < this.numCols) {
                     tempGrid[y][x] = {
                         value: cell,
-                        color: currentShape.color
+                        color: currentShape.color,
+                        shapeType: currentShape.type
                     };
                 }
             });
@@ -181,6 +228,12 @@ class Board extends Component<{}, BoardState> {
         })
     }
 
+    calculateScore(linesCleared: number): number {
+        const basePoints = [0, 100, 300, 500, 800]; // Points for 0, 1, 2, 3, 4 lines
+        const levelMultiplier = this.state.level + 1;
+        return (basePoints[linesCleared] || 0) * levelMultiplier;
+    }
+
     render() {
         const {
             score, level, linesCleared, isGameOver, 
@@ -199,13 +252,13 @@ class Board extends Component<{}, BoardState> {
                             {row.map((cell, colIndex) => (
                                 <div
                                     key={colIndex}
-                                    className="board-cell"
+                                    className="cell"
                                     style = {{
+                                        width: '30px',
+                                        height: '30px',
                                         backgroundColor: cell.value ? cell.color : 'transparent',
                                         border: cell.value ? '1px solid #444' : '1px solid transparent',
-                                        borderRadius: '2px',
-                                        width: '20px',
-                                        height: '20px'
+                                        borderRadius: '4px'
                                     }}
                                 />
                             ))}
@@ -252,9 +305,9 @@ class Board extends Component<{}, BoardState> {
                                         style={{
                                             width: '20px',
                                             height: '20px',
-                                            backgroundColor: cell ? '#bb86fc' : 'transparent',
-                                            border: cell ? '1px solid #bb86fc' : 'none',
-                                            borderRadius: '2px'
+                                            backgroundColor: cell ? nextShape.color : 'transparent',
+                                            border: cell ? '1px solid #444' : '1px solid transparent',
+                                            borderRadius: '4px'
                                         }}
                                     />
                                 ))}

@@ -61,7 +61,7 @@ export class LShape extends ShapeBase {
 
 export class JShape extends ShapeBase {
     type = 'J';
-    color = '0000ff';
+    color = '#0000ff';
 
     constructor(matrix?: ShapeMatrix) {
         super(matrix ?? [
@@ -74,7 +74,7 @@ export class JShape extends ShapeBase {
 
 export class SShape extends ShapeBase {
     type = 'S';
-    color = 'ff0000';
+    color = '#ff0000';
 
     constructor(matrix?: ShapeMatrix) {
         super(matrix ?? [

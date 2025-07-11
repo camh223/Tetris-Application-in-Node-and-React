@@ -161,15 +161,9 @@
     font-family: monospace;
 }
 
-.board-cell.filled {
-    background-color: red !important;
-}
-
 .board-row {
     display: contents;
 }
-
-.color1 { background-color: red; }
 
 /* Responsive Design for Dark Theme */
 @media (max-width: 768px) {
