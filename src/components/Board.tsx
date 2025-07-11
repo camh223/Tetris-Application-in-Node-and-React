@@ -57,6 +57,7 @@ class Board extends Component<{}, BoardState> {
 
     componentDidMount(): void {
         this.inputHandler.bindListeners();
+        this.startGravity();
     }
 
     componentWillUnmount(): void {
@@ -100,7 +101,7 @@ class Board extends Component<{}, BoardState> {
         const { currentShape, position, grid } = this.state;
         const nextPosition = { row: position.row + 1, col: position.col};
 
-        const canPlaceShape = this.collisionDetector.canPlaceShapeAt(currentShape, nextPosition.col, nextPosition.row);
+        const canPlaceShape = this.collisionDetector.canPlaceShapeAt(currentShape, nextPosition.row, nextPosition.col);
 
         if (canPlaceShape) {
             this.setState({ position: nextPosition });
@@ -108,7 +109,10 @@ class Board extends Component<{}, BoardState> {
             const newGrid = grid.clone();
             newGrid.mergeShape(currentShape.matrix, position)
 
-            this.setState({ grid: newGrid }, () => this.spawnNextShape());
+            this.setState({ grid: newGrid }, () => {
+                this.collisionDetector = new CollisionDetector(this.state.grid);
+                this.spawnNextShape();
+            });
         }
     }
 
@@ -130,19 +134,27 @@ class Board extends Component<{}, BoardState> {
         });
     }
 
-    private getRenderGrid(): number[][] {
+    private getRenderGrid(): { value: number, color: string }[][] {
         const { grid, currentShape, position } = this.state;
         const baseGrid = grid.clone().getMatrix();
         const shapeMatrix = currentShape.matrix;
 
-        const tempGrid = baseGrid.map(row => [...row]);
+        const tempGrid: { value: number, color: string }[][] = baseGrid.map(row =>
+            row.map(cell => ({
+                value: cell,
+                color: cell ? '#999' : 'transparent'
+            }))
+        );
 
         shapeMatrix.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
                 const y = position.row + rowIndex;
                 const x = position.col + colIndex;
-                if (cell && y >= 0 && this.numRows && x >= 0 && x < this.numCols) {
-                    tempGrid[y][x] = cell;
+                if (cell && y >= 0 && y < this.numRows && x >= 0 && x < this.numCols) {
+                    tempGrid[y][x] = {
+                        value: cell,
+                        color: currentShape.color
+                    };
                 }
             });
         });
@@ -187,7 +199,14 @@ class Board extends Component<{}, BoardState> {
                             {row.map((cell, colIndex) => (
                                 <div
                                     key={colIndex}
-                                    className={`board-cell ${cell ? `filled color${cell}` : ''}`}
+                                    className="board-cell"
+                                    style = {{
+                                        backgroundColor: cell.value ? cell.color : 'transparent',
+                                        border: cell.value ? '1px solid #444' : '1px solid transparent',
+                                        borderRadius: '2px',
+                                        width: '20px',
+                                        height: '20px'
+                                    }}
                                 />
                             ))}
                         </div>

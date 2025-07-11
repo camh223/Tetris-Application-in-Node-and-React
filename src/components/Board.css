@@ -18,6 +18,8 @@
     border: 3px solid #bb86fc;
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(187, 134, 252, 0.3);
+    z-index: 1;
+    position: relative;
 }
 
 .cell {
@@ -159,6 +161,16 @@
     font-family: monospace;
 }
 
+.board-cell.filled {
+    background-color: red !important;
+}
+
+.board-row {
+    display: contents;
+}
+
+.color1 { background-color: red; }
+
 /* Responsive Design for Dark Theme */
 @media (max-width: 768px) {
     .game-container {
@@ -187,5 +199,12 @@
     
     .game-over-content h1 {
         font-size: 2rem;
+    }
+
+    .board-cell {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #333;
+        background-color: black;
     }
 }
