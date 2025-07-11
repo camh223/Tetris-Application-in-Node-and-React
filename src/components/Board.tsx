@@ -25,7 +25,7 @@ interface BoardState {
 
 class Board extends Component<{}, BoardState> {
     static contextType = AuthContext;
-    declare context: React.ContextType<typeof AuthContext>;
+    context!: React.ContextType<typeof AuthContext>;
     
     numRows = 20;
     numCols = 10;
@@ -248,3 +248,4 @@ class Board extends Component<{}, BoardState> {
     }
 }
 
+export default Board;

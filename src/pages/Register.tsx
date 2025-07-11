@@ -1,20 +1,20 @@
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import './Register.css'
 
 import api from '../api/axios';
 
-const Register = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+const Register = (): JSX.Element => {
+    const [username, setUsername] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const [success, setSuccess] = useState<string>('');
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
         setSuccess('');
@@ -34,12 +34,22 @@ const Register = () => {
             setError('');
             setSuccess('Registration successful! You can now log in.');
             setTimeout(() => navigate('/login'), 2000);
-        } catch (err) {
-            console.error('Login error', err);
-            if (err.response && err.response.data && err.response.data.message) {
-                setError(err.response.data.message);
+        } catch (err: unknown) {
+            console.error('Registration error', err);
+            if (
+                typeof err === 'object' &&
+                err !== null &&
+                'response' in err &&
+                typeof err.response === 'object' &&
+                err.response !== null &&
+                'data' in err.response &&
+                typeof err.response.data === 'object' &&
+                err.response.data !== null &&
+                'message' in err.response.data
+            ) {
+                setError((err.response.data as { message: string }).message);
             } else {
-                setError('Login failed');
+                setError('Registration failed');
             }
         }
     };

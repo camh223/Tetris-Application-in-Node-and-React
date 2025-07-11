@@ -1,16 +1,16 @@
-import { useContext, useState } from 'react';
+import { JSX, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 import './Login.css'
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+const Login = (): JSX.Element => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const { login, error } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {

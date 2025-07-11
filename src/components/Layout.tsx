@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 
-function Layout() {
+function Layout(): JSX.Element {
     return (
         <div style={{ backgroundColor: '#121212', minHeight: '100vh', color: '#ffffff' }}>
             <Navbar />

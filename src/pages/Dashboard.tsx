@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import { useAuth } from '../context/AuthContext';
 
-function Dashboard() {
+interface LeaderboardPlayer {
+    _id: string;
+    name: string;
+    highScore: number;
+}
+
+function Dashboard(): JSX.Element {
     const { user, getLeaderboard } = useAuth();
     const navigate = useNavigate();
-    const [leaderboard, setLeaderboard] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+
+    const [leaderboard, setLeaderboard] = useState<LeaderboardPlayer[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>('');
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
@@ -30,9 +37,13 @@ function Dashboard() {
         navigate('/play');
     };
 
+    if (!user) {
+        return <p>Loading user data...</p>;
+    }
+
     return (
         <div className="dashboard">
-            <h2>Welcome {user.username} to your Tetris Dashboard!</h2>
+            <h2>Welcome {user.name} to your Tetris Dashboard!</h2>
             
             <div className="dashboard-content">
                 <div className="stats-section">
@@ -57,10 +68,10 @@ function Dashboard() {
                                     {leaderboard.map((player, index) => (
                                         <li 
                                             key={player._id} 
-                                            className={`leaderboard-item ${player.username === user.username ? 'current-user' : ''}`}
+                                            className={`leaderboard-item ${player.name === user.name ? 'current-user' : ''}`}
                                         >
                                             <span className="rank">#{index + 1}</span>
-                                            <span className="username">{player.username}</span>
+                                            <span className="username">{player.name}</span>
                                             <span className="score">{player.highScore.toLocaleString()}</span>
                                         </li>
                                     ))}

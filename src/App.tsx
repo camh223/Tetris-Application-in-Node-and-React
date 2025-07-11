@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
@@ -9,7 +9,7 @@ import Dashboard from './pages/Dashboard';
 import GamePage from './pages/GamePage';
 import ProtectedRoute from './components/ProtectedRoute';
 
-function App() {
+function App(): JSX.Element {
 	const { user } = useAuth();
 
 	return(
