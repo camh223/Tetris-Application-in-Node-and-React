@@ -1,12 +1,13 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
-import { FiLogOut } from 'react-icons/fi'; 
+import axios from "../api/axios";
+import { useContext } from "react";
+import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
+import { FiLogOut } from "react-icons/fi";
 
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
-    const { user, logout } = useAuth();
+    const { user, loading, logout } = useAuth();
 
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
@@ -20,7 +21,7 @@ const Navbar: React.FC = () => {
                             onClick={logout}
                             className="btn btn-outline-light"
                         >
-                            <FiLogOut style={{ marginRight: '5px' }} />
+                            <FiLogOut></FiLogOut>
                             Logout
                         </button>
                     ) : null}

@@ -1,16 +1,15 @@
-import express from 'express';
-import { RequestHandler } from 'express';
-import authenticateToken from '../middleware/authMiddleware';
+import { Router } from 'express';
 import {
     submitScore,
     getTopScores,
     getUserScores
 } from '../controllers/scoreController';
+import { isAuthenticated } from '../middleware/isAuthenticated';
 
-const router = express.Router();
+const router = Router();
 
-router.post("/submit", authenticateToken , submitScore );
+router.post("/submit", isAuthenticated, submitScore );
 router.get("/top", getTopScores );
-router.get("/history", authenticateToken , getUserScores );
+router.get("/history", isAuthenticated, getUserScores );
 
 export default router;

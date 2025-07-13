@@ -1,18 +1,16 @@
-import { Response, NextFunction, RequestHandler } from 'express';
-import User from '../models/User';
-import { AuthenticatedRequest } from '../types/AuthenticatedRequest';
+import { RequestHandler } from 'express';
+import User, { IUser } from '../models/User';
 
 export const getMe: RequestHandler = async (req, res, next) => {
-    const authReq = req as AuthenticatedRequest;
     try {
-        res.json({ user: authReq.user });
+        const user = req.user as IUser;
+        res.json({ user });
     } catch (err) {
         next(err);
     }
 };
 
 export const updateHighScore: RequestHandler = async (req, res, next) => {
-    const authReq = req as AuthenticatedRequest;
     const { score } = req.body;
 
     if (typeof score !== "number" || score < 0) {
@@ -22,7 +20,7 @@ export const updateHighScore: RequestHandler = async (req, res, next) => {
     }
 
     try {
-        const user = authReq.user;
+        const user = req.user as IUser;
 
         if (score > user.highScore) {
             user.highScore = score;
@@ -47,9 +45,10 @@ export const updateHighScore: RequestHandler = async (req, res, next) => {
 export const getLeaderboard: RequestHandler = async (req, res, next) => {
     try {
         const users = await User.find({})
-            .select("username highScore")
+            .select("name avatar highScore")
             .sort({ highScore: -1 })
             .limit(10);
+            
         res.json({ leaderboard: users });
     } catch (err) {
         next(err);

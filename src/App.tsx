@@ -1,16 +1,14 @@
-import React, { JSX } from 'react';
+import React, { JSX, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-
-import Register from './pages/Register';
 import Login from './pages/Login';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import GamePage from './pages/GamePage';
 import ProtectedRoute from './components/ProtectedRoute';
+import { AuthContext } from './context/AuthContext';
 
 function App(): JSX.Element {
-	const { user } = useAuth();
+	const { user } = useContext(AuthContext);
 
 	return(
 		<Router>
@@ -23,10 +21,6 @@ function App(): JSX.Element {
 								<Dashboard />
 							</ProtectedRoute>
 						}
-					/>
-					<Route 
-						path="/register" 
-						element={user ? <Navigate to="/dashboard" /> : <Register />} 
 					/>
 					<Route 
 						path="/login" 

@@ -1,22 +1,24 @@
-import express from 'express';
-import { RequestHandler } from 'express';
-import {
-    registerUser,
-    loginUser
-} from '../controllers/authController';
-import {
-    getMe,
-    updateHighScore,
-    getLeaderboard
-} from '../controllers/userController';
-import authenticateToken from '../middleware/authMiddleware';
+import { Router } from "express";
+import passport from "passport";
+import { getCurrentUser, logoutUser } from "../controllers/authController";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/register", registerUser);
-router.post("/login", loginUser );
-router.get("/me", authenticateToken , getMe );
-router.put("/update-highscore", authenticateToken , updateHighScore );
-router.get("/leaderboard", getLeaderboard );
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+
+router.get(
+    "/google/callback",
+    passport.authenticate("google", {
+        failureRedirect: "http://localhost:3000/login",
+        session: true
+    }),
+    (_req, res) => {
+        res.redirect("http://localhost:3000/dashboard");
+    }
+);
+
+router.get("/me", getCurrentUser);
+
+router.get("/logout", logoutUser);
 
 export default router;
