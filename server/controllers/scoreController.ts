@@ -21,7 +21,7 @@ export const submitScore: RequestHandler = async (req, res, next) => {
     }
 };
 
-export const getTopScores: RequestHandler = async (re, res, next) => {
+export const getTopScores: RequestHandler = async (req, res, next) => {
     try {
         const topScores = await Score.find()
             .sort({ score: -1 })

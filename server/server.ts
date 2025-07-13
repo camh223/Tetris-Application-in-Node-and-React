@@ -7,6 +7,7 @@ import scoresRoutes from "./routes/scores";
 import usersRoutes from "./routes/users";
 import "./config/passport";
 import errorHandler from "./middleware/errorHandler";
+import mongoose from "mongoose";
 
 const app = express();
 
@@ -21,10 +22,11 @@ app.use(
     session({
         secret: process.env.SESSION_SECRET!,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
         cookie: {
             httpOnly: true,
             secure: false,
+            sameSite: "lax",
         },
     })
 );
@@ -42,3 +44,8 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+mongoose
+    .connect(process.env.MONGO_URI!)
+    .then(() => console.log("MongoDB connected"))
+    .catch((err) => console.error("MongoDB connection error:", err));
