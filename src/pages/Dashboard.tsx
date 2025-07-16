@@ -23,7 +23,12 @@ function Dashboard(): JSX.Element {
         const fetchLeaderboard = async () => {
             try {
                 const res = await axios.get("/scores/top");
-                setLeaderboard(res.data);
+                const formatted = res.data.map((entry: any) => ({
+                    _id: entry._id,
+                    name: entry.user?.name ?? 'Unknown',
+                    highScore: entry.score ?? 0,
+                }));
+                setLeaderboard(formatted);
             } catch (err) {
                 setError('Failed to load leaderboard');
                 console.error('Failed to fetch leaderboard:', err);

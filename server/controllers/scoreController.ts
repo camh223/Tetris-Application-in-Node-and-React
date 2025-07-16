@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import Score from '../models/Score';
-import User from '../models/User';
 import { IUser } from "../models/User";
 
 export const submitScore: RequestHandler = async (req, res, next) => {

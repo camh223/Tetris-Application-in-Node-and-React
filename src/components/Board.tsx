@@ -159,6 +159,18 @@ const Board: React.FC = () => {
         }
     };
 
+    const updateLeaderboardApi = async (newScore: number) => {
+        try {
+            await axios.post(
+                '/scores/submit',
+                { score: newScore }, 
+            );
+        } catch (error) {
+            console.error("Failed to update leaderboard:", error);
+            throw error;
+        }
+    };
+
     const checkAndSaveHighScore = async () => {
         if (!user) return;
         if (score > (user.highScore ?? 0)) {
@@ -166,6 +178,7 @@ const Board: React.FC = () => {
                 const result = await updateHighScoreApi(score);
                 if (result.isNewHighScore) {
                     setIsNewHighScore(true);
+                    updateLeaderboardApi(score);
                 }
             } catch (error) {
                 console.error("Failed to save high score:", error);
