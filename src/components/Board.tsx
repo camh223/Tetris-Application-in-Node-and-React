@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Grid } from '../models/Grid';
 import { ShapeBase, ShapeFactory } from '../models/Shape';
@@ -29,6 +29,7 @@ const Board: React.FC = () => {
     const [linesCleared, setLinesCleared] = useState<number>(0);
     const [level, setLevel] = useState<number>(0);
     const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
+    const [highScore, setHighScore] = useState<number | undefined>(user?.highScore);
 
     const collisionDetector = useRef(new CollisionDetector(grid));
     const gravityInterval = useRef<number | null>(null);
@@ -163,6 +164,7 @@ const Board: React.FC = () => {
                 const result = await updateHighScoreApi(score);
                 if (result.isNewHighScore) {
                     setIsNewHighScore(true);
+                    setHighScore(score);
                 }
             } catch (error) {
                 console.error("Failed to save high score:", error);
@@ -245,7 +247,7 @@ const Board: React.FC = () => {
                             {isNewHighScore && <h2 style={{ color: 'gold' }}>New High Score!</h2>}
                             <p>Score: {score}</p>
                             <p>Level: {level}</p>
-                            {user && <p>Your High Score: {user.highScore}</p>}
+                            {user && <p>Your High Score: {highScore}</p>}
                             <button onClick={resetGame}>Restart</button>
                         </div>
                     </div>
@@ -263,7 +265,7 @@ const Board: React.FC = () => {
                     {user && (
                     <>
                         <h2>High Score:</h2>
-                        <p>{user.highScore}</p>
+                        <p>{highScore}</p>
                     </>
                     )}
                 </div>

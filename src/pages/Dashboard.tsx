@@ -17,6 +17,7 @@ function Dashboard(): JSX.Element {
     const [leaderboard, setLeaderboard] = useState<LeaderboardPlayer[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
+    const [highScore, setHighScore] = useState<number | undefined>(user?.highScore);
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
@@ -34,6 +35,10 @@ function Dashboard(): JSX.Element {
         fetchLeaderboard();
     }, []);
 
+    useEffect(() => {
+        setHighScore(user?.highScore);
+    }, [user?.highScore])
+
     const handlePlayClick = () => {
         navigate('/play');
     };
@@ -49,7 +54,7 @@ function Dashboard(): JSX.Element {
             <div className="dashboard-content">
                 <div className="stats-section">
                     <div className="stats">
-                        <h3>Your High Score: {user.highScore}</h3>
+                        <h3>Your High Score: {highScore}</h3>
                     </div>
                     <button onClick={handlePlayClick}>Play Tetris</button>
                 </div>
