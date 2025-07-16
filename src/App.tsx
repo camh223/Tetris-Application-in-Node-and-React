@@ -5,16 +5,18 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import GamePage from './pages/GamePage';
 import ProtectedRoute from './components/ProtectedRoute';
-import { AuthContext } from './context/AuthContext';
+import PublicOnlyRoute from './components/PublicOnlyRoute';
+import { useAuth } from './context/AuthContext';
 
 function App(): JSX.Element {
-	const { user } = useContext(AuthContext);
-
 	return(
 		<Router>
 			<Routes>
 				<Route element={<Layout />}>
-					<Route path="/" element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login"/>} />
+					<Route 
+						path="/" 
+						element={<Navigate to="/dashboard" />}
+					/>
 					<Route path="/dashboard"
 						element={
 							<ProtectedRoute>
@@ -24,7 +26,11 @@ function App(): JSX.Element {
 					/>
 					<Route 
 						path="/login" 
-						element={user ? <Navigate to="/dashboard" /> : <Login />} 
+						element={
+							<PublicOnlyRoute>
+								<Login />
+							</PublicOnlyRoute>
+						}
 					/>
 					<Route 
 						path="/play" 

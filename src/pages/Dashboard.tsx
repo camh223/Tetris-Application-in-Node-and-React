@@ -2,6 +2,7 @@ import React, { useState, useEffect, JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import { useAuth } from '../context/AuthContext';
+import axios from "../api/axios";
 
 interface LeaderboardPlayer {
     _id: string;
@@ -10,7 +11,7 @@ interface LeaderboardPlayer {
 }
 
 function Dashboard(): JSX.Element {
-    const { user, getLeaderboard } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [leaderboard, setLeaderboard] = useState<LeaderboardPlayer[]>([]);
@@ -20,8 +21,8 @@ function Dashboard(): JSX.Element {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const data = await getLeaderboard();
-                setLeaderboard(data);
+                const res = await axios.get("/scores/top");
+                setLeaderboard(res.data);
             } catch (err) {
                 setError('Failed to load leaderboard');
                 console.error('Failed to fetch leaderboard:', err);
@@ -31,7 +32,7 @@ function Dashboard(): JSX.Element {
         };
 
         fetchLeaderboard();
-    }, [getLeaderboard]);
+    }, []);
 
     const handlePlayClick = () => {
         navigate('/play');

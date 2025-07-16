@@ -21,8 +21,8 @@ const Navbar: React.FC = () => {
                             onClick={logout}
                             className="btn btn-outline-light"
                         >
-                            <FiLogOut></FiLogOut>
-                            Logout
+                            <FiLogOut />
+                            &nbsp;Logout
                         </button>
                     ) : null}
                 </div>

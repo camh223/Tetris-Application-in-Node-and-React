@@ -22,11 +22,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
+    console.log(user);
+
     const fetchUser = async () => {
         try {
             setLoading(true);
             const res = await axios.get("/auth/me", { withCredentials: true });
-            setUser(res.data.user);
+            setUser(res.data);
         } catch (err) {
             setUser(null);
         } finally {
