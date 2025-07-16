@@ -1,5 +1,5 @@
 import React, { useState, useEffect, JSX } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Dashboard.css';
 import { useAuth } from '../context/AuthContext';
 import axios from "../api/axios";
@@ -13,11 +13,11 @@ interface LeaderboardPlayer {
 function Dashboard(): JSX.Element {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [leaderboard, setLeaderboard] = useState<LeaderboardPlayer[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
-    const [highScore, setHighScore] = useState<number | undefined>(user?.highScore);
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
@@ -33,11 +33,7 @@ function Dashboard(): JSX.Element {
         };
 
         fetchLeaderboard();
-    }, []);
-
-    useEffect(() => {
-        setHighScore(user?.highScore);
-    }, [user?.highScore])
+    }, [location.pathname]);
 
     const handlePlayClick = () => {
         navigate('/play');
@@ -54,7 +50,7 @@ function Dashboard(): JSX.Element {
             <div className="dashboard-content">
                 <div className="stats-section">
                     <div className="stats">
-                        <h3>Your High Score: {highScore}</h3>
+                        <h3>Your High Score: {user.highScore}</h3>
                     </div>
                     <button onClick={handlePlayClick}>Play Tetris</button>
                 </div>

@@ -11,6 +11,7 @@ interface User {
 
 interface AuthContextType {
     user: User | null;
+    setUser: (user: User) => void;
     loading: boolean;
     logout: () => void;
     refetchUser: () => void;
@@ -46,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, loading, logout, refetchUser: fetchUser }}>
+        <AuthContext.Provider value={{ user, setUser, loading, logout, refetchUser: fetchUser }}>
             {children}
         </AuthContext.Provider>
     );

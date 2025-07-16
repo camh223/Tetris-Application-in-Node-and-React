@@ -18,7 +18,7 @@ const BASE_INTERVAL = 500;
 const START_POSITION = { row: 0, col: 4};
 
 const Board: React.FC = () => {
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
 
     const [grid, setGrid] = useState(() => new Grid(NUM_ROWS, NUM_COLS));
     const [currentShape, setCurrentShape] = useState<ShapeBase>(() => ShapeFactory.random());
@@ -29,7 +29,6 @@ const Board: React.FC = () => {
     const [linesCleared, setLinesCleared] = useState<number>(0);
     const [level, setLevel] = useState<number>(0);
     const [isNewHighScore, setIsNewHighScore] = useState<boolean>(false);
-    const [highScore, setHighScore] = useState<number | undefined>(user?.highScore);
 
     const collisionDetector = useRef(new CollisionDetector(grid));
     const gravityInterval = useRef<number | null>(null);
@@ -150,6 +149,9 @@ const Board: React.FC = () => {
                 { score: newScore },
                 { withCredentials: true }
             );
+            if (user) {
+                setUser({ ...user, highScore: newScore });
+            }
             return res.data;
         } catch (error) {
             console.error("Failed to update high score:", error);
@@ -164,7 +166,6 @@ const Board: React.FC = () => {
                 const result = await updateHighScoreApi(score);
                 if (result.isNewHighScore) {
                     setIsNewHighScore(true);
-                    setHighScore(score);
                 }
             } catch (error) {
                 console.error("Failed to save high score:", error);
@@ -247,7 +248,7 @@ const Board: React.FC = () => {
                             {isNewHighScore && <h2 style={{ color: 'gold' }}>New High Score!</h2>}
                             <p>Score: {score}</p>
                             <p>Level: {level}</p>
-                            {user && <p>Your High Score: {highScore}</p>}
+                            {user && <p>Your High Score: {user.highScore}</p>}
                             <button onClick={resetGame}>Restart</button>
                         </div>
                     </div>
@@ -265,7 +266,7 @@ const Board: React.FC = () => {
                     {user && (
                     <>
                         <h2>High Score:</h2>
-                        <p>{highScore}</p>
+                        <p>{user.highScore}</p>
                     </>
                     )}
                 </div>
