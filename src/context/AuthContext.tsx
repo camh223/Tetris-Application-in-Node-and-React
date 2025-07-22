@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "../api/axios";
 
-interface User {
+export interface User {
     _id: string;
     name: string;
     email: string;
@@ -9,7 +9,7 @@ interface User {
     highScore?: number;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
     user: User | null;
     setUser: (user: User) => void;
     loading: boolean;

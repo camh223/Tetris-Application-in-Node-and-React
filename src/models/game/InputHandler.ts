@@ -1,10 +1,9 @@
-type InputCallback = (action: string) => void;
+import { BlockState } from "./BlockState";
+import CollisionDetector from "./CollisionDetector";
 
 export default class InputHandler {
-    private callback: InputCallback;
 
-    constructor(callback: InputCallback) {
-        this.callback = callback;
+    constructor(private blockState: BlockState, private collisionDetector: CollisionDetector) {
         this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
@@ -17,23 +16,25 @@ export default class InputHandler {
     }
 
     private handleKeyDown(e: KeyboardEvent): void {
+        e.preventDefault();
+        let newState = { ...this.blockState };
         switch (e.code) {
             case "ArrowLeft":
-                e.preventDefault();
-                this.callback("MOVE_LEFT");
+                newState.position.col -= 1;
                 break;
             case "ArrowRight":
-                e.preventDefault();
-                this.callback("MOVE_RIGHT");
+                newState.position.col += 1;
                 break;
             case "ArrowDown":
-                e.preventDefault();
-                this.callback("SOFT_DROP");
+                newState.position.row += 1;
                 break;
             case "ArrowUp":
-                e.preventDefault();
-                this.callback("ROTATE");
+                newState.shape.rotate();
                 break;
+        }
+
+        if (this.collisionDetector.canPlaceShapeAt(newState)) {
+            this.blockState = newState;
         }
     }
 }

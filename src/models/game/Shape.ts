@@ -8,7 +8,7 @@ export abstract class ShapeBase {
         this.matrix = matrix.map(row => [...row]);
     }
 
-    rotateClockwise(): ShapeMatrix {
+    private rotateClockwise(): ShapeMatrix {
         return this.matrix[0].map((_, colIndex) =>
             this.matrix.map(row => row[colIndex]).reverse()
         );

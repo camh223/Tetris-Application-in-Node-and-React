@@ -45,7 +45,7 @@ export class Grid {
         return null;
     }
 
-    clearLines(): { linesCleared: number; newMatrix: GridCell[][] } {
+    clearLines(): number {
         const newMatrix = this.matrix.filter(row => row.some(cell => cell.value === 0));
         const linesCleared = this.numRows - newMatrix.length;
 
@@ -55,7 +55,7 @@ export class Grid {
         }
 
         this.matrix = newMatrix;
-        return { linesCleared, newMatrix };
+        return linesCleared;
     }
 
     mergeShape(matrix: ShapeMatrix, position: { row: number, col: number}, color: string, shapeType: string): void {
